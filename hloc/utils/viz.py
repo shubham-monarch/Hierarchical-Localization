@@ -20,7 +20,7 @@ def cm_RdGn(x):
 
 
 def plot_images(imgs, titles=None, cmaps='gray', dpi=100, pad=.5,
-                adaptive=True, figsize=4.5):
+                adaptive=True, figsize=20):
     """Plot a set of images horizontally.
     Args:
         imgs: a list of NumPy or PyTorch images, RGB (H, W, 3) or mono (H, W).

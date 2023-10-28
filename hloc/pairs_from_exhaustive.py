@@ -43,14 +43,10 @@ def sequential_main(
         names_ref = names_q
 
     pairs = []
-    ''' pairing with the previous maximum previous 2 images'''
-    for i, n1 in enumerate(names_q):
-        for j in range(max(0, i-1), max(0, i - 5), -1):
-            if (i==j):
-                continue
-            pairs.append((n1, names_ref[j]))
-    for pair in pairs:
-        print(pair)
+    '''pairing 2 sequential images'''
+    en = len(names_q)
+    for i in range(en - 1):
+            pairs.append((names_q[i], names_q[i + 1]))
     logger.info(f'Found {len(pairs)} pairs.')
     with open(output, 'w') as f:
         f.write('\n'.join(' '.join([i, j]) for i, j in pairs))
