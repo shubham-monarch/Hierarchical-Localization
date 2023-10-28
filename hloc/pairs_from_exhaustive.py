@@ -7,6 +7,54 @@ from . import logger
 from .utils.parsers import parse_image_lists
 from .utils.io import list_h5_names
 
+''' pefroms sequential matching between x frame images in the same sequence'''
+def sequential_main(
+        output: Path,
+        image_list: Optional[Union[Path, List[str]]] = None,
+        features: Optional[Path] = None,
+        ref_list: Optional[Union[Path, List[str]]] = None,
+        ref_features: Optional[Path] = None):
+
+    if image_list is not None:
+        if isinstance(image_list, (str, Path)):
+            names_q = parse_image_lists(image_list)
+        elif isinstance(image_list, collections.Iterable):
+            names_q = list(image_list)
+        else:
+            raise ValueError(f'Unknown type for image list: {image_list}')
+    elif features is not None:
+        names_q = list_h5_names(features)
+    else:
+        raise ValueError('Provide either a list of images or a feature file.')
+
+    self_matching = False
+    if ref_list is not None:
+        if isinstance(ref_list, (str, Path)):
+            names_ref = parse_image_lists(ref_list)
+        elif isinstance(image_list, collections.Iterable):
+            names_ref = list(ref_list)
+        else:
+            raise ValueError(
+                f'Unknown type for reference image list: {ref_list}')
+    elif ref_features is not None:
+        names_ref = list_h5_names(ref_features)
+    else:
+        self_matching = True
+        names_ref = names_q
+
+    pairs = []
+    ''' pairing with the previous maximum previous 2 images'''
+    for i, n1 in enumerate(names_q):
+        for j in range(max(0, i-1), max(0, i - 5), -1):
+            if (i==j):
+                continue
+            pairs.append((n1, names_ref[j]))
+    for pair in pairs:
+        print(pair)
+    logger.info(f'Found {len(pairs)} pairs.')
+    with open(output, 'w') as f:
+        f.write('\n'.join(' '.join([i, j]) for i, j in pairs))
+
 
 def main(
         output: Path,
