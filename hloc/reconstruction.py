@@ -61,6 +61,7 @@ def run_reconstruction(sfm_dir: Path,
     if options is None:
         options = {}
     options = {'num_threads': min(multiprocessing.cpu_count(), 16), **options}
+    #verbose = True
     with OutputCapture(verbose):
         with pycolmap.ostream():
             reconstructions = pycolmap.incremental_mapping(
@@ -124,6 +125,9 @@ def main(sfm_dir: Path,
     if reconstruction is not None:
         logger.info(f'Reconstruction statistics:\n{reconstruction.summary()}'
                     + f'\n\tnum_input_images = {len(image_ids)}')
+    
+    #logger.info('Reconstruction almost done.')
+    #logger.info(f"reconstruction.summary(): {reconstruction.summary()}")
     return reconstruction
 
 

@@ -46,7 +46,8 @@ def sequential_main(
     '''pairing 2 sequential images'''
     en = len(names_q)
     for i in range(en - 1):
-            pairs.append((names_q[i], names_q[i + 1]))
+            for j in range (i  + 1, min(i + 5, en - 1)):
+                pairs.append((names_q[i], names_q[j]))
     logger.info(f'Found {len(pairs)} pairs.')
     with open(output, 'w') as f:
         f.write('\n'.join(' '.join([i, j]) for i, j in pairs))

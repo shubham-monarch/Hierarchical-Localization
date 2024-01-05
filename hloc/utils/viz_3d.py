@@ -149,35 +149,6 @@ def plot_cameras(
             fig, image, reconstruction.cameras[image.camera_id], **kwargs)
 
 
-def plot_reconstruction_minus_camera(
-        fig: go.Figure,
-        rec: pycolmap.Reconstruction,
-        max_reproj_error: float = 6.0,
-        color: str = 'rgb(0, 0, 255)',
-        name: Optional[str] = None,
-        min_track_length: int = 2,
-        points: bool = True,
-        cameras: bool = False,
-        points_rgb: bool = True,
-        cs: float = 1.0):
-    # Filter outliers
-    bbs = rec.compute_bounding_box(0.001, 0.999)
-    # Filter points, use original reproj error here
-    p3Ds = [p3D for _, p3D in rec.points3D.items() if (
-                            (p3D.xyz >= bbs[0]).all() and
-                            (p3D.xyz <= bbs[1]).all() and
-                            p3D.error <= max_reproj_error and
-                            p3D.track.length() >= min_track_length)]
-    xyzs = [p3D.xyz for p3D in p3Ds]
-    if points_rgb:
-        pcolor = [p3D.color for p3D in p3Ds]
-    else:
-        pcolor = color
-    if points:
-        plot_points(fig, np.array(xyzs), color=pcolor, ps=1, name=name)
-    if cameras:
-        plot_cameras(fig, rec, color=color, legendgroup=name, size=cs)
-
 
 def plot_reconstruction(
         fig: go.Figure,
@@ -193,11 +164,20 @@ def plot_reconstruction(
     # Filter outliers
     bbs = rec.compute_bounding_box(0.001, 0.999)
     # Filter points, use original reproj error here
+    p3Ds = [p3D for _, p3D in rec.points3D.items()]
+    print(f"type(p3Ds): {type(p3Ds)}")
+    
+    '''
     p3Ds = [p3D for _, p3D in rec.points3D.items() if (
                             (p3D.xyz >= bbs[0]).all() and
-                            (p3D.xyz <= bbs[1]).all() and
-                            p3D.error <= max_reproj_error and
-                            p3D.track.length() >= min_track_length)]
+                            (p3D.xyz <= bbs[1]).all()) and
+                            p3D.track.length() >= min_track_length]
+    '''
+    #print(f"len(p3Ds): {len(p3Ds)}")
+    #print(f"p3Ds: {len(p3Ds)}")
+    #print(f"p3Ds[0]: {p3Ds[0]}")
+    #rint(f"p3Ds[0].errror: {p3Ds[0].error}")
+    #rint(f"p3Ds[0].track.length(): {p3Ds[0].track.length()}")
     xyzs = [p3D.xyz for p3D in p3Ds]
     if points_rgb:
         pcolor = [p3D.color for p3D in p3Ds]
