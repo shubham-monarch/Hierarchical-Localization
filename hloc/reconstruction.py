@@ -52,6 +52,7 @@ def get_image_ids(database_path: Path) -> Dict[str, int]:
 def run_reconstruction(sfm_dir: Path,
                        database_path: Path,
                        image_dir: Path,
+                       gps_priors_path: Optional[Path] = None,
                        verbose: bool = False,
                        options: Optional[Dict[str, Any]] = None,
                        ) -> pycolmap.Reconstruction:
@@ -61,10 +62,11 @@ def run_reconstruction(sfm_dir: Path,
     if options is None:
         options = {}
     options = {'num_threads': min(multiprocessing.cpu_count(), 16), **options}
+    verbose = False
     with OutputCapture(verbose):
         with pycolmap.ostream():
             reconstructions = pycolmap.incremental_mapping(
-                database_path, image_dir, models_path, options=options)
+                database_path, image_dir, models_path, gps_priors_path, options=options)
 
     if len(reconstructions) == 0:
         logger.error('Could not reconstruct any model!')
@@ -98,6 +100,7 @@ def main(sfm_dir: Path,
          camera_mode: pycolmap.CameraMode = pycolmap.CameraMode.AUTO,
          verbose: bool = False,
          skip_geometric_verification: bool = False,
+         gps_priors_path: Optional[Path] = None,
          min_match_score: Optional[float] = None,
          image_list: Optional[List[str]] = None,
          image_options: Optional[Dict[str, Any]] = None,
@@ -120,7 +123,7 @@ def main(sfm_dir: Path,
     if not skip_geometric_verification:
         estimation_and_geometric_verification(database, pairs, verbose)
     reconstruction = run_reconstruction(
-        sfm_dir, database, image_dir, verbose, mapper_options)
+        sfm_dir, database, image_dir, gps_priors_path, verbose, mapper_options)
     if reconstruction is not None:
         logger.info(f'Reconstruction statistics:\n{reconstruction.summary()}'
                     + f'\n\tnum_input_images = {len(image_ids)}')
